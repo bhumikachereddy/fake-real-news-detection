@@ -1,0 +1,36 @@
+project:
+  name: Fake_Real_News_Detection
+  task: Binary Text Classification
+
+dataset:
+  path: data/processed/cleaned_news.csv
+  label_column: label
+  text_column: clean_text
+
+labels:
+  fake: 0
+  real: 1
+
+split:
+  test_size: 0.20
+  random_state: 42
+
+tfidf:
+  max_features: 50000
+  stop_words: english
+  ngram_range: [1, 2]
+  min_df: 2
+  max_df: 0.95
+  sublinear_tf: true
+
+model:
+  type: LinearSVC
+  C_values:
+    - 0.01
+    - 0.1
+    - 1
+    - 10
+
+cross_validation:
+  folds: 5
+  scoring: f1

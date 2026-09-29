@@ -1,0 +1,41 @@
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# MLflow
+mlruns/
+logs/mlruns/
+mlflow.db
+mlflow.db-journal
+
+# Trained models
+*.pkl
+*.joblib
+
+# Temporary files
+*.log
+*.tmp
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large raw datasets
+data/raw/*.csv

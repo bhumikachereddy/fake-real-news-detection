@@ -1,0 +1,84 @@
+{
+    "experiment": "Experiment 5 - Data Validation and Reproducible ML Pipelines",
+    "dataset": {
+        "path": "C:\\Users\\bhumi\\OneDrive\\Desktop\\fake-real-news-detection\\data\\processed\\cleaned_news.csv",
+        "rows": 43974,
+        "columns": 6,
+        "sha256": "0b7c33ef4dd5936f80b5a764ecb0764f37aed8facb72ae6294ddc0a2f3db1d1f"
+    },
+    "schema_validation": {
+        "passed": true,
+        "required_columns": [
+            "clean_text",
+            "label"
+        ],
+        "actual_columns": [
+            "title",
+            "text",
+            "subject",
+            "date",
+            "clean_text",
+            "label"
+        ],
+        "missing_columns": [],
+        "extra_columns": [
+            "title",
+            "text",
+            "subject",
+            "date"
+        ]
+    },
+    "datatype_validation": {
+        "passed": true,
+        "datatypes": {
+            "title": "str",
+            "text": "str",
+            "subject": "str",
+            "date": "str",
+            "clean_text": "str",
+            "label": "int64"
+        },
+        "errors": []
+    },
+    "missing_value_validation": {
+        "passed": true,
+        "missing_counts": {
+            "clean_text": 0,
+            "label": 0
+        },
+        "total_missing": 0
+    },
+    "empty_text_validation": {
+        "passed": true,
+        "empty_text_records": 0
+    },
+    "label_validation": {
+        "passed": true,
+        "unique_labels": [
+            0,
+            1
+        ],
+        "expected_labels": [
+            0,
+            1
+        ],
+        "invalid_labels": [],
+        "invalid_label_records": 0
+    },
+    "duplicate_validation": {
+        "passed": true,
+        "duplicate_records": 0
+    },
+    "corrupted_record_validation": {
+        "passed": true,
+        "corrupted_records": 0
+    },
+    "consistency_validation": {
+        "passed": true,
+        "row_count": 43974,
+        "required_columns_present": true
+    },
+    "overall_validation": {
+        "passed": true
+    }
+}
