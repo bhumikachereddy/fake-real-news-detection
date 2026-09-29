@@ -1,0 +1,23 @@
+artifact_path: file:C:/Users/bhumi/OneDrive/Desktop/fake-real-news-detection/mlruns/1/models/m-224327d9b0c84d36b172df00564f0667/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.13.1
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.16.1
+model_id: m-224327d9b0c84d36b172df00564f0667
+model_size_bytes: 408076
+model_uuid: m-224327d9b0c84d36b172df00564f0667
+prompts: null
+run_id: e7d7ffda89a14fb18ec5bf8b0354ffcd
+utc_time_created: '2026-09-29 08:55:32.228486'
