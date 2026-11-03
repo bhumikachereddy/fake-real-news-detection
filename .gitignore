@@ -20,6 +20,8 @@ mlflow.db-journal
 
 # Trained models
 *.pkl
+!models/final_svm_model.pkl
+!models/tfidf_vectorizer.pkl
 *.joblib
 
 # Temporary files
