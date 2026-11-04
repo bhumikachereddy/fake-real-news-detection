@@ -41,3 +41,7 @@ desktop.ini
 
 # Large raw datasets
 data/raw/*.csv
+# Large datasets - keep locally, do not upload to GitHub
+data/raw/Fake.csv
+data/raw/True.csv
+data/processed/cleaned_news.csv
