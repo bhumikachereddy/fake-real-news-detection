@@ -31,6 +31,14 @@ jobs:
           test -f models/final_svm_model.pkl
           test -f models/tfidf_vectorizer.pkl
 
-      - name: Run Automated Tests
-        run: |
-          python -m pytest tests/test_model.py -v
+      - name: Run Lab 8 and Lab 9 Automated Tests
+  run: |
+    python -m pytest tests/test_model.py tests/test_failure_injection.py -v
+
+- name: Run Lab 9 Failure Injection
+  run: |
+    python -m src.failure_injection
+
+- name: Verify Lab 9 Report
+  run: |
+    python -c "import json; r=json.load(open('artifacts/failure_injection_report.json')); assert r['overall_status']=='PASSED'; assert r['failed']==0; print('Lab 9 report verified successfully')"

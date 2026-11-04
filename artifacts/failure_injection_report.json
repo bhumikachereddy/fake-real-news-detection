@@ -1,0 +1,59 @@
+{
+    "lab": "Lab 9 - Failure Injection and Reliability Testing",
+    "timestamp": "2026-11-04T15:15:48.436691",
+    "total_scenarios": 7,
+    "passed": 7,
+    "failed": 0,
+    "overall_status": "PASSED",
+    "scenarios": [
+        {
+            "scenario": "Missing model artifact",
+            "status": "PASSED",
+            "failure_detected": true,
+            "message": "Artifact not found: C:\\Users\\bhumi\\AppData\\Local\\Temp\\tmp_juf5wid\\missing_model.pkl",
+            "error_type": "FileNotFoundError"
+        },
+        {
+            "scenario": "Corrupted model artifact",
+            "status": "PASSED",
+            "failure_detected": true,
+            "message": "invalid literal for int() with base 0: b'NVALID PICKLE CONTENT'",
+            "error_type": "ValueError"
+        },
+        {
+            "scenario": "Invalid input data type",
+            "status": "PASSED",
+            "failure_detected": true,
+            "message": "News input must be a string",
+            "error_type": "TypeError"
+        },
+        {
+            "scenario": "Empty news input",
+            "status": "PASSED",
+            "failure_detected": true,
+            "message": "News input cannot be empty",
+            "error_type": "ValueError"
+        },
+        {
+            "scenario": "Missing dataset",
+            "status": "PASSED",
+            "failure_detected": true,
+            "message": "Dataset file is missing",
+            "error_type": "FileNotFoundError"
+        },
+        {
+            "scenario": "Dataset schema validation",
+            "status": "PASSED",
+            "failure_detected": true,
+            "message": "Missing dataset columns: ['clean_text', 'label']",
+            "error_type": "ValueError"
+        },
+        {
+            "scenario": "Model recovery and prediction",
+            "status": "PASSED",
+            "failure_detected": false,
+            "message": "Operation completed successfully",
+            "result": "0"
+        }
+    ]
+}
