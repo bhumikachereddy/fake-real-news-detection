@@ -3,11 +3,10 @@ name: Lab 8 - Fake and Real News CI Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, experiment-3 ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
-
 jobs:
   model-testing:
     name: Automated Model Testing
