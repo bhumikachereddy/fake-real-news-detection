@@ -1,4 +1,5 @@
 
+import os
 import json
 import tempfile
 from pathlib import Path
@@ -8,217 +9,278 @@ import joblib
 import pandas as pd
 
 
+# Project paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MODEL_PATH = BASE_DIR / "models" / "final_svm_model.pkl"
 VECTORIZER_PATH = BASE_DIR / "models" / "tfidf_vectorizer.pkl"
-DATASET_PATH = BASE_DIR / "data" / "processed" / "cleaned_news.csv"
 
-REPORT_PATH = BASE_DIR / "artifacts" / "failure_injection_report.json"
-
-REQUIRED_COLUMNS = ["clean_text", "label"]
+ARTIFACT_DIR = BASE_DIR / "artifacts"
+REPORT_PATH = ARTIFACT_DIR / "failure_injection_report.json"
 
 
 def load_artifact(path):
-    """Load a model or vectorizer safely."""
-    if not Path(path).exists():
+    """Load a model or vectorizer and detect missing/corrupted files."""
+
+    path = Path(path)
+
+    if not path.exists():
         raise FileNotFoundError(f"Artifact not found: {path}")
 
-    return joblib.load(path)
+    try:
+        return joblib.load(path)
+    except Exception as error:
+        raise ValueError(f"Artifact is corrupted: {error}")
 
 
 def validate_text(text):
-    """Validate input news text."""
+    """Validate news input."""
+
     if not isinstance(text, str):
         raise TypeError("News input must be a string")
 
     if not text.strip():
         raise ValueError("News input cannot be empty")
 
-    return text.strip()
+    return True
 
 
 def validate_dataset(path):
-    """Check dataset availability and required columns."""
+    """Validate dataset existence and required columns."""
+
     path = Path(path)
 
     if not path.exists():
-        raise FileNotFoundError("Dataset file is missing")
+        raise FileNotFoundError(f"Dataset not found: {path}")
 
-    df = pd.read_csv(path, nrows=5)
+    try:
+        df = pd.read_csv(path)
+    except Exception as error:
+        raise ValueError(f"Unable to read dataset: {error}")
 
-    missing = [
-        column for column in REQUIRED_COLUMNS
-        if column not in df.columns
-    ]
+    required_columns = {"clean_text", "label"}
 
-    if missing:
-        raise ValueError(f"Missing dataset columns: {missing}")
+    missing_columns = required_columns - set(df.columns)
+
+    if missing_columns:
+        raise ValueError(
+            f"Dataset missing required columns: {missing_columns}"
+        )
 
     return True
 
 
 def predict_news(text):
-    """Load the actual model and predict news."""
-    text = validate_text(text)
+    """Load trained artifacts and predict Fake or Real news."""
 
-    vectorizer = load_artifact(VECTORIZER_PATH)
+    validate_text(text)
+
     model = load_artifact(MODEL_PATH)
+    vectorizer = load_artifact(VECTORIZER_PATH)
 
-    features = vectorizer.transform([text])
-    prediction = model.predict(features)
+    transformed_text = vectorizer.transform([text])
+
+    prediction = model.predict(transformed_text)
 
     return int(prediction[0])
 
 
-def run_scenario(name, operation, expected_exception=None):
-    """Execute a failure scenario and record its result."""
-    try:
-        result = operation()
+def run_scenario(name, function, expected_failure=False):
+    """Execute one failure-injection scenario."""
 
-        return {
-            "scenario": name,
-            "status": "PASSED" if expected_exception is None else "FAILED",
-            "failure_detected": False,
-            "message": "Operation completed successfully",
-            "result": str(result)
-        }
+    result = {
+        "scenario": name,
+        "status": "FAILED",
+        "expected_failure": expected_failure,
+        "message": ""
+    }
+
+    try:
+        output = function()
+
+        if expected_failure:
+            result["message"] = (
+                "Expected failure did not occur"
+            )
+        else:
+            result["status"] = "PASSED"
+            result["message"] = f"Executed successfully: {output}"
 
     except Exception as error:
-        detected = (
-            expected_exception is not None
-            and isinstance(error, expected_exception)
-        )
 
-        return {
-            "scenario": name,
-            "status": "PASSED" if detected else "FAILED",
-            "failure_detected": True,
-            "message": str(error),
-            "error_type": type(error).__name__
-        }
+        if expected_failure:
+            result["status"] = "PASSED"
+            result["message"] = (
+                f"Expected failure detected: {error}"
+            )
+        else:
+            result["message"] = (
+                f"Unexpected failure: {error}"
+            )
+
+    return result
 
 
 def run_failure_injection():
 
+    ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
+
     results = []
 
     # Scenario 1: Missing model artifact
-    with tempfile.TemporaryDirectory() as temp_dir:
-        missing_model = Path(temp_dir) / "missing_model.pkl"
-
-        results.append(
-            run_scenario(
-                "Missing model artifact",
-                lambda: load_artifact(missing_model),
-                FileNotFoundError
-            )
-        )
-
-    # Scenario 2: Corrupted model artifact
-    with tempfile.TemporaryDirectory() as temp_dir:
-        corrupt_model = Path(temp_dir) / "corrupt_model.pkl"
-        corrupt_model.write_bytes(b"INVALID PICKLE CONTENT")
-
-        results.append(
-            run_scenario(
-                "Corrupted model artifact",
-                lambda: load_artifact(corrupt_model),
-                Exception
-            )
-        )
-
-    # Scenario 3: Invalid input data type
     results.append(
         run_scenario(
-            "Invalid input data type",
+            "Missing Model Artifact",
+            lambda: load_artifact(
+                BASE_DIR / "models" / "missing_model.pkl"
+            ),
+            expected_failure=True
+        )
+    )
+
+    # Scenario 2: Corrupted model artifact
+    def corrupted_model_test():
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".pkl",
+            delete=False
+        ) as temp_file:
+
+            temp_file.write(b"This is corrupted model data")
+            temp_path = temp_file.name
+
+        try:
+            return load_artifact(temp_path)
+        finally:
+            os.remove(temp_path)
+
+    results.append(
+        run_scenario(
+            "Corrupted Model Artifact",
+            corrupted_model_test,
+            expected_failure=True
+        )
+    )
+
+    # Scenario 3: Invalid input datatype
+    results.append(
+        run_scenario(
+            "Invalid Input Data Type",
             lambda: validate_text(12345),
-            TypeError
+            expected_failure=True
         )
     )
 
     # Scenario 4: Empty news input
     results.append(
         run_scenario(
-            "Empty news input",
+            "Empty News Input",
             lambda: validate_text("   "),
-            ValueError
+            expected_failure=True
         )
     )
 
     # Scenario 5: Missing dataset
-    with tempfile.TemporaryDirectory() as temp_dir:
-        missing_dataset = Path(temp_dir) / "missing.csv"
-
-        results.append(
-            run_scenario(
-                "Missing dataset",
-                lambda: validate_dataset(missing_dataset),
-                FileNotFoundError
-            )
+    results.append(
+        run_scenario(
+            "Missing Dataset",
+            lambda: validate_dataset(
+                BASE_DIR / "data" / "missing_dataset.csv"
+            ),
+            expected_failure=True
         )
+    )
 
-    # Scenario 6: Dataset with missing columns
-    with tempfile.TemporaryDirectory() as temp_dir:
-        invalid_dataset = Path(temp_dir) / "invalid.csv"
-        pd.DataFrame({
-            "title": ["Test news"],
-            "text": ["Sample content"]
-        }).to_csv(invalid_dataset, index=False)
+    # Scenario 6: Invalid dataset schema
+    def invalid_schema_test():
 
-        results.append(
-            run_scenario(
-                "Dataset schema validation",
-                lambda: validate_dataset(invalid_dataset),
-                ValueError
-            )
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            suffix=".csv",
+            delete=False,
+            encoding="utf-8",
+            newline=""
+        ) as temp_file:
+
+            pd.DataFrame({
+                "wrong_column": ["sample news"],
+                "category": [0]
+            }).to_csv(temp_file.name, index=False)
+
+            temp_path = temp_file.name
+
+        try:
+            return validate_dataset(temp_path)
+        finally:
+            os.remove(temp_path)
+
+    results.append(
+        run_scenario(
+            "Invalid Dataset Schema",
+            invalid_schema_test,
+            expected_failure=True
         )
+    )
 
     # Scenario 7: Actual model recovery and prediction
-    sample_text = (
-        "The government announced a new development initiative."
+    sample_news = (
+        "The government announced a new development "
+        "programme for the country."
     )
 
     results.append(
         run_scenario(
-            "Model recovery and prediction",
-            lambda: predict_news(sample_text)
+            "Model Recovery and Prediction",
+            lambda: predict_news(sample_news),
+            expected_failure=False
         )
     )
 
+    # Calculate report summary
     passed = sum(
-        result["status"] == "PASSED" for result in results
+        1 for result in results
+        if result["status"] == "PASSED"
     )
 
     failed = len(results) - passed
 
     report = {
+        "project": "Fake and Real News Detection",
         "lab": "Lab 9 - Failure Injection and Reliability Testing",
-        "timestamp": datetime.now().isoformat(),
+        "execution_time": datetime.now().isoformat(),
         "total_scenarios": len(results),
         "passed": passed,
         "failed": failed,
-        "overall_status": "PASSED" if failed == 0 else "FAILED",
-        "scenarios": results
+        "overall_status": (
+            "PASSED" if failed == 0 else "FAILED"
+        ),
+        "results": results
     }
 
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-
+    # Save JSON report
     with open(REPORT_PATH, "w", encoding="utf-8") as file:
         json.dump(report, file, indent=4)
 
-    print("\n========== LAB 9 FAILURE INJECTION REPORT ==========")
+    # Display results
+    print("\n===== LAB 9 FAILURE INJECTION REPORT =====")
 
     for result in results:
         print(
-            f"{result['scenario']}: {result['status']}"
+            f"{result['scenario']}: "
+            f"{result['status']} - {result['message']}"
         )
 
-    print("\nTotal scenarios:", len(results))
-    print("Passed:", passed)
-    print("Failed:", failed)
+    print("\nTotal scenarios:", report["total_scenarios"])
+    print("Passed:", report["passed"])
+    print("Failed:", report["failed"])
     print("Overall status:", report["overall_status"])
-    print("\nReport saved at:", REPORT_PATH)
+
+    print("\nReport saved to:", REPORT_PATH)
+
+    if failed > 0:
+        raise RuntimeError(
+            "Failure injection testing did not pass all scenarios"
+        )
 
     return report
 
