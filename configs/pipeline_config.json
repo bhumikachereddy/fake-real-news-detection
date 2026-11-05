@@ -1,0 +1,11 @@
+{
+    "dataset_path": "data/processed/cleaned_news.csv",
+    "test_dataset_path": "data/processed/test_data.csv",
+    "model_path": "models/final_svm_model.pkl",
+    "vectorizer_path": "models/tfidf_vectorizer.pkl",
+    "evaluation_report_path": "artifacts/model_evaluation_report.json",
+    "pipeline_report_path": "artifacts/e2e_pipeline_report.json",
+    "min_accuracy": 0.90,
+    "min_f1_score": 0.90,
+    "run_api_tests": true
+}
