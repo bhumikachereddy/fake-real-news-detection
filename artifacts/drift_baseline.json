@@ -1,0 +1,8 @@
+{
+    "total_records": 43974,
+    "fake_news": 22764,
+    "real_news": 21210,
+    "fake_percentage": 51.77,
+    "real_percentage": 48.23,
+    "average_words": 406.05
+}

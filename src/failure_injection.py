@@ -34,15 +34,17 @@ def load_artifact(path):
 
 
 def validate_text(text):
-    """Validate news input."""
+    """Validate and return cleaned news input."""
 
     if not isinstance(text, str):
         raise TypeError("News input must be a string")
 
-    if not text.strip():
+    cleaned_text = text.strip()
+
+    if not cleaned_text:
         raise ValueError("News input cannot be empty")
 
-    return True
+    return cleaned_text
 
 
 def validate_dataset(path):
@@ -73,12 +75,12 @@ def validate_dataset(path):
 def predict_news(text):
     """Load trained artifacts and predict Fake or Real news."""
 
-    validate_text(text)
+    cleaned_text = validate_text(text)
 
     model = load_artifact(MODEL_PATH)
     vectorizer = load_artifact(VECTORIZER_PATH)
 
-    transformed_text = vectorizer.transform([text])
+    transformed_text = vectorizer.transform([cleaned_text])
 
     prediction = model.predict(transformed_text)
 

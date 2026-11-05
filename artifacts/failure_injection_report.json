@@ -1,59 +1,53 @@
 {
+    "project": "Fake and Real News Detection",
     "lab": "Lab 9 - Failure Injection and Reliability Testing",
-    "timestamp": "2026-11-04T15:15:48.436691",
+    "execution_time": "2026-11-04T19:49:37.821473",
     "total_scenarios": 7,
     "passed": 7,
     "failed": 0,
     "overall_status": "PASSED",
-    "scenarios": [
+    "results": [
         {
-            "scenario": "Missing model artifact",
+            "scenario": "Missing Model Artifact",
             "status": "PASSED",
-            "failure_detected": true,
-            "message": "Artifact not found: C:\\Users\\bhumi\\AppData\\Local\\Temp\\tmp_juf5wid\\missing_model.pkl",
-            "error_type": "FileNotFoundError"
+            "expected_failure": true,
+            "message": "Expected failure detected: Artifact not found: C:\\Users\\bhumi\\OneDrive\\Desktop\\fake-real-news-detection\\models\\missing_model.pkl"
         },
         {
-            "scenario": "Corrupted model artifact",
+            "scenario": "Corrupted Model Artifact",
             "status": "PASSED",
-            "failure_detected": true,
-            "message": "invalid literal for int() with base 0: b'NVALID PICKLE CONTENT'",
-            "error_type": "ValueError"
+            "expected_failure": true,
+            "message": "Expected failure detected: Artifact is corrupted: "
         },
         {
-            "scenario": "Invalid input data type",
+            "scenario": "Invalid Input Data Type",
             "status": "PASSED",
-            "failure_detected": true,
-            "message": "News input must be a string",
-            "error_type": "TypeError"
+            "expected_failure": true,
+            "message": "Expected failure detected: News input must be a string"
         },
         {
-            "scenario": "Empty news input",
+            "scenario": "Empty News Input",
             "status": "PASSED",
-            "failure_detected": true,
-            "message": "News input cannot be empty",
-            "error_type": "ValueError"
+            "expected_failure": true,
+            "message": "Expected failure detected: News input cannot be empty"
         },
         {
-            "scenario": "Missing dataset",
+            "scenario": "Missing Dataset",
             "status": "PASSED",
-            "failure_detected": true,
-            "message": "Dataset file is missing",
-            "error_type": "FileNotFoundError"
+            "expected_failure": true,
+            "message": "Expected failure detected: Dataset not found: C:\\Users\\bhumi\\OneDrive\\Desktop\\fake-real-news-detection\\data\\missing_dataset.csv"
         },
         {
-            "scenario": "Dataset schema validation",
+            "scenario": "Invalid Dataset Schema",
             "status": "PASSED",
-            "failure_detected": true,
-            "message": "Missing dataset columns: ['clean_text', 'label']",
-            "error_type": "ValueError"
+            "expected_failure": true,
+            "message": "Expected failure detected: Dataset missing required columns: {'label', 'clean_text'}"
         },
         {
-            "scenario": "Model recovery and prediction",
+            "scenario": "Model Recovery and Prediction",
             "status": "PASSED",
-            "failure_detected": false,
-            "message": "Operation completed successfully",
-            "result": "0"
+            "expected_failure": false,
+            "message": "Executed successfully: 0"
         }
     ]
 }

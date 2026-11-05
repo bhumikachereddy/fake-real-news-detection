@@ -6,3 +6,5 @@ mlflow
 matplotlib
 seaborn
 jupyter
+fastapi
+uvicorn[standard]
