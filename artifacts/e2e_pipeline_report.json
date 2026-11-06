@@ -1,0 +1,97 @@
+{
+    "pipeline": "Fake and Real News Detection - End-to-End MLOps",
+    "status": "success",
+    "started_at": "2026-11-05T08:30:47.143917+00:00",
+    "completed_at": "2026-11-05T08:32:00.309869+00:00",
+    "duration_seconds": 73.17,
+    "dataset": {
+        "training_records": 43974,
+        "test_records": 8810,
+        "training_labels": [
+            0,
+            1
+        ],
+        "test_labels": [
+            0,
+            1
+        ]
+    },
+    "model_metrics": {
+        "test_records": 8810,
+        "accuracy": 0.9984,
+        "precision": 0.9991,
+        "recall": 0.9976,
+        "f1_score": 0.9983,
+        "confusion_matrix": [
+            [
+                4564,
+                4
+            ],
+            [
+                10,
+                4232
+            ]
+        ]
+    },
+    "rollback_performed": false,
+    "steps": [
+        {
+            "step": "dataset_validation",
+            "status": "passed",
+            "details": {
+                "training_records": 43974,
+                "test_records": 8810,
+                "training_labels": [
+                    0,
+                    1
+                ],
+                "test_labels": [
+                    0,
+                    1
+                ]
+            }
+        },
+        {
+            "step": "model_training",
+            "command": [
+                "C:\\Users\\bhumi\\OneDrive\\Desktop\\fake-real-news-detection\\.venv\\Scripts\\python.exe",
+                "src/train.py"
+            ],
+            "return_code": 0,
+            "status": "passed"
+        },
+        {
+            "step": "model_evaluation",
+            "command": [
+                "C:\\Users\\bhumi\\OneDrive\\Desktop\\fake-real-news-detection\\.venv\\Scripts\\python.exe",
+                "-m",
+                "monitoring.evaluate_model"
+            ],
+            "return_code": 0,
+            "status": "passed"
+        },
+        {
+            "step": "model_quality_gate",
+            "status": "passed",
+            "actual_accuracy": 0.9984,
+            "actual_f1_score": 0.9983
+        },
+        {
+            "step": "model_artifact_validation",
+            "status": "passed"
+        },
+        {
+            "step": "api_testing",
+            "command": [
+                "C:\\Users\\bhumi\\OneDrive\\Desktop\\fake-real-news-detection\\.venv\\Scripts\\python.exe",
+                "-m",
+                "pytest",
+                "tests/test_api.py",
+                "-v"
+            ],
+            "return_code": 0,
+            "status": "passed"
+        }
+    ],
+    "error": null
+}

@@ -59,4 +59,3 @@ jobs:
           name: lab13-pipeline-report
           path: artifacts/e2e_pipeline_report.json
           if-no-files-found: warn
-'@ | Set-Content -Path ".\.github\workflows\lab13_e2e_pipeline.yml" -Encoding utf8

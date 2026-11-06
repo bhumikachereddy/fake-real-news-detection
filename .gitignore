@@ -1,49 +1,40 @@
-# Python virtual environments
+# Python environment
 .venv/
 venv/
-env/
-ENV/
-
-# Python cache
 __pycache__/
 *.py[cod]
-*.pyo
 
-# Jupyter
-.ipynb_checkpoints/
-
-# MLflow
-mlruns/
-logs/mlruns/
-mlflow.db
-mlflow.db-journal
-
-# Trained models
-*.pkl
-!models/final_svm_model.pkl
-!models/tfidf_vectorizer.pkl
-*.joblib
-
-# Temporary files
-*.log
-*.tmp
-
-# VS Code
+# IDE
 .vscode/
+.idea/
+*.iml
 
-# Environment variables
-.env
+# Python testing
+.pytest_cache/
 
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
+# Logs and temporary files
+logs/
+*.log
 
-# Large raw datasets
-data/raw/*.csv
-# Large datasets - keep locally, do not upload to GitHub
-data/raw/Fake.csv
-data/raw/True.csv
-data/processed/cleaned_news.csvartifacts/model_backup_*/
+# Model experiment tracking
+mlruns/
+
+# Local backups
+artifacts/model_backup_*/
+
+# Runtime prediction logs
 artifacts/prediction_logs.csv
-artifacts/e2e_pipeline_report.json
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+# Large datasets - keep locally, do not push to GitHub
+data/raw/*.csv
+data/processed/cleaned_news.csv
+
+
+# Large datasets
+data/raw/*.csv
+data/processed/cleaned_news.csv
+
